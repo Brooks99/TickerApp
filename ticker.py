@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter import messagebox
 from yfinance import Ticker
 import feedparser  # Add this import for RSS feeds
 import ssl
@@ -13,6 +12,7 @@ class StockTicker:
     def __init__(self):
         self.config = self.load_config()
         self.root = tk.Tk()
+        self.root.title("Stock Ticker")  # Add this line to change the window title
         self.canvas = None
         self.update_button = None
         self._stocks = {}
@@ -136,7 +136,7 @@ class StockTicker:
             self.news_items = []
             
             if (feed.entries):
-                for entry in feed.entries[:5]:  # Get first 5 news items
+                for entry in feed.entries[:6]:  # Get first 6 news items
                     title = entry.get('title', 'No title available')
                     link = entry.get('link', '#')
                     self.news_items.append({
@@ -159,7 +159,7 @@ class StockTicker:
             height=self.config['canvas']['stock_height'], 
             bg='black'
         )
-        self.canvas.pack(fill='x', expand=False)
+        self.canvas.pack(fill='x', expand=False, pady=(0, 0))  # Add 10 pixels padding below
         
         # Create news ticker canvas
         self.news_canvas = tk.Canvas(
