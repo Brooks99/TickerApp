@@ -5,6 +5,9 @@ import ssl
 import certifi
 import json
 import os
+import pandas_market_calendars as mcal
+from datetime import datetime
+import pytz
 
 ssl._create_default_https_context = lambda: ssl.create_default_context(cafile=certifi.where())
 
@@ -74,6 +77,20 @@ class StockTicker:
             'arrow': ''
         }
         self._last_prices[ticker] = 0
+        
+    def update_title(self):
+        try:
+            # Update the window title with the current date and time
+            # Check market status
+            is_open, status = self.is_market_open()
+            if not is_open:
+                # If market is closed, set title accordingly
+                self.root.title(f"Stock Ticker - {status}")
+        except Exception as e:
+            print(f"Error updating window title: {e}")
+            # Fallback to default title if error occurs
+            self.root.title("Stock Ticker")
+            
 
     def update_stock(self, ticker):
         try:
@@ -258,9 +275,45 @@ class StockTicker:
         update_interval = self.config['updates']['interval']
         self.root.after(update_interval, self.schedule_updates)
 
+    def is_market_open(self):
+        """Check if the US stock market is currently open"""
+        try:
+            # Get NYSE calendar
+            nyse = mcal.get_calendar('NYSE')
+            
+            # Get current time in ET (Eastern Time)
+            et_tz = pytz.timezone('US/Eastern')
+            current_time = datetime.now(et_tz)
+            
+            # Get market schedule for today
+            schedule = nyse.schedule(
+                start_date=current_time.date(),
+                end_date=current_time.date()
+            )
+            
+            if schedule.empty:
+                return False, "Market Closed (Weekend - Holiday)"
+                
+            market_open = schedule.iloc[0]['market_open'].tz_convert(et_tz)
+            market_close = schedule.iloc[0]['market_close'].tz_convert(et_tz)
+            
+            if market_open <= current_time <= market_close:
+                return True, "Market Open"
+            elif current_time < market_open:
+                return False, f"Market Opens at {market_open.strftime('%I:%M %p ET')}"
+            else:
+                return False, "Market Closed"
+                
+        except Exception as e:
+            print(f"Error checking market status: {e}")
+            return False, "Market Status Unknown"
+
 def main():
     app = StockTicker()
     app.create_canvas()
+    
+    # Update the title initially    
+    app.update_title()
     
     # Initialize stocks first
     app.initialize_stocks()
