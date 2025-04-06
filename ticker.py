@@ -15,7 +15,7 @@ class StockTicker:
     def __init__(self):
         self.config = self.load_config()
         self.root = tk.Tk()
-        self.root.title("Tickrly")  # Add this line to change the window title
+        self.root.title("Tickrly") 
         self.canvas = None
         self.update_button = None
         self._stocks = {}
