@@ -31,7 +31,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/Brooks99/TickerApp">
-    <img src="/tickrly-high-resolution-logo.png" alt="Logo" width="256" height="256">
+    <img src="/tickrly-high-resolution-logo.png" alt="Logo" width="1000" height="1000">
   </a>
 
 <h3 align="center">Tickrly</h3>
