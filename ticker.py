@@ -85,12 +85,10 @@ class StockTicker:
             is_open, status = self.is_market_open()
             if not is_open:
                 # If market is closed, set title accordingly
-                self.root.title(f"Stock Ticker - {status}")
+                self.root.title(f"Tickrly - {status}")
         except Exception as e:
             print(f"Error updating window title: {e}")
-            # Fallback to default title if error occurs
-            self.root.title("Stock Ticker")
-            
+                 
 
     def update_stock(self, ticker):
         try:
