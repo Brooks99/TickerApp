@@ -30,15 +30,14 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/github_username/repo_name">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+  <a href="https://github.com/Brooks99/TickerApp">
+    <img src="/logo.png" alt="Logo" width="80" height="80">
   </a>
 
-<h3 align="center">Stock and News Ticker</h3>
+<h3 align="center">Tickrly</h3>
 
   <p align="center">
-    A python application to fetch stock ticker information and news. It is presented
-    in a scrolling ticker in its own window. A configuration file can be edited to customize and include stocks of interest. 
+    A news and stock ticker providing information and news presented in a scrolling ticker in its own window. A configuration file can be edited to customize and include stocks of interest. 
     <br />
     <a href="https://github.com/Brooks99/TickerApp"><strong>Explore the docs »</strong></a>
     <br />
