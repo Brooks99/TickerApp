@@ -5,7 +5,7 @@
         "news_height": 40
     },
     "stocks": {
-        "symbols": ["^GSPC","^DJI", "IBM", "TSLA", "NVDA", "TJX", "TGT"]
+        "symbols": ["^GSPC","^DJI", "IBM", "TSLA", "NVDA", "DHI", "CALM"]
     },
     "display": {
         "stock_font_size": 16,
@@ -15,7 +15,7 @@
         "scroll_speed": 2  
     },
     "updates": {
-                "interval": 30000
+                "interval": 60000
 
     }
 }
