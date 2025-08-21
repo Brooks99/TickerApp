@@ -1,0 +1,33 @@
+@startuml model.puml
+
+class StockTicker {
+    - config: dict
+    - root: tk.Tk
+    - canvas: tk.Canvas
+    - update_button: tk.Button
+    - _stocks: dict
+    - _last_prices: dict
+    - scroll_position: int
+    - canvas_width: int
+    - news_scroll_position: int
+    - news_items: list
+    - news_canvas: tk.Canvas
+    - news_height: int
+
+    + __init__()
+    + load_config()
+    + get_default_config()
+    + initialize_stocks()
+    + _handle_missing_data(ticker)
+    + update_title()
+    + update_stock(ticker)
+    + update_news()
+    + create_canvas()
+    + update_all_stocks()
+    + draw_stocks()
+    + draw_news()
+    + animate()
+    + schedule_updates()
+    + is_market_open()
+}
+@enduml
