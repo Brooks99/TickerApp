@@ -311,7 +311,7 @@ class StockTicker:
 def main():
     app = StockTicker()
     
-    app.initialize_stocks
+    #app.initialize_stocks
     
     app.create_canvas()
     
