@@ -15,7 +15,7 @@ class StockTicker:
     def __init__(self):
         self.config = self.load_config()
         self.root = tk.Tk()
-        self.root.title("Tickrly") 
+        self.root.title("Tickrly")
         self.canvas = None
         self.update_button = None
         self._stocks = {}
@@ -26,7 +26,7 @@ class StockTicker:
         self.news_items = []
         self.news_canvas = None
         self.news_height = self.config['canvas']['news_height']
-        self.initialize_stocks()
+        
         
     def load_config(self):
         config_path = os.path.join(os.path.dirname(__file__), 'config.json')
@@ -85,7 +85,9 @@ class StockTicker:
             is_open, status = self.is_market_open()
             if not is_open:
                 # If market is closed, set title accordingly
-                self.root.title(f"Tickrly - {status}")
+                self.root.title("Tickrly - {status}")
+            else:
+                self.root.title("Tickrly")    
         except Exception as e:
             print(f"Error updating window title: {e}")
                  
@@ -308,6 +310,9 @@ class StockTicker:
 
 def main():
     app = StockTicker()
+    
+    app.initialize_stocks
+    
     app.create_canvas()
     
     # Update the title initially    
