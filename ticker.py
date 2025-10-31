@@ -11,6 +11,95 @@ import pytz
 
 ssl._create_default_https_context = lambda: ssl.create_default_context(cafile=certifi.where())
 
+class ConfigEditor:
+    def __init__(self, ticker_app):
+        self.ticker_app = ticker_app
+        self.window = None
+        
+    def toggle(self):
+        """Show or hide the config editor window"""
+        if self.window:
+            self.window.destroy()
+            self.window = None
+            return
+            
+        self.window = tk.Toplevel(self.ticker_app.root)
+        self.window.title("Stock Symbol Editor")
+        self.window.geometry("400x500")
+        
+        # Create listbox for symbols
+        frame = tk.Frame(self.window)
+        frame.pack(pady=10, padx=10, fill=tk.BOTH, expand=True)
+        
+        tk.Label(frame, text="Stock Symbols", font=("Helvetica", 14, "bold")).pack()
+        
+        # Create listbox with scrollbar
+        listbox_frame = tk.Frame(frame)
+        listbox_frame.pack(fill=tk.BOTH, expand=True, pady=(10,5))
+        
+        self.symbol_listbox = tk.Listbox(listbox_frame, selectmode=tk.SINGLE)
+        self.symbol_listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        scrollbar = tk.Scrollbar(listbox_frame)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        
+        self.symbol_listbox.config(yscrollcommand=scrollbar.set)
+        scrollbar.config(command=self.symbol_listbox.yview)
+        
+        # Add current symbols to listbox
+        for symbol in self.ticker_app.config["stocks"]["symbols"]:
+            self.symbol_listbox.insert(tk.END, symbol)
+            
+        # Add entry and buttons
+        entry_frame = tk.Frame(frame)
+        entry_frame.pack(fill=tk.X, pady=5)
+        
+        self.symbol_entry = tk.Entry(entry_frame)
+        self.symbol_entry.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
+        
+        tk.Button(entry_frame, text="Add", command=self.add_symbol).pack(side=tk.LEFT)
+        
+        # Delete button
+        tk.Button(frame, text="Delete Selected", command=self.delete_symbol).pack(pady=5)
+        
+        # Save and Cancel buttons
+        button_frame = tk.Frame(frame)
+        button_frame.pack(fill=tk.X, pady=10)
+        
+        tk.Button(button_frame, text="Save", command=self.save_changes).pack(side=tk.LEFT, expand=True, padx=5)
+        tk.Button(button_frame, text="Cancel", command=self.window.destroy).pack(side=tk.LEFT, expand=True, padx=5)
+        
+    def add_symbol(self):
+        """Add a new stock symbol"""
+        symbol = self.symbol_entry.get().strip().upper()
+        if symbol and symbol not in self.symbol_listbox.get(0, tk.END):
+            self.symbol_listbox.insert(tk.END, symbol)
+            self.symbol_entry.delete(0, tk.END)
+            
+    def delete_symbol(self):
+        """Delete the selected symbol"""
+        selection = self.symbol_listbox.curselection()
+        if selection:
+            self.symbol_listbox.delete(selection)
+            
+    def save_changes(self):
+        """Save changes to config file and update the ticker"""
+        symbols = list(self.symbol_listbox.get(0, tk.END))
+        self.ticker_app.config["stocks"]["symbols"] = symbols
+        
+        # Save to config file
+        config_path = self.ticker_app.get_config_path()
+        os.makedirs(os.path.dirname(config_path), exist_ok=True)
+        with open(config_path, "w") as f:
+            json.dump(self.ticker_app.config, f, indent=4)
+            
+        # Update the ticker display
+        self.ticker_app._stocks = {}  # Clear cached stock data
+        self.ticker_app._last_prices = {}
+        self.ticker_app._refresh_action()  # Refresh the display
+        
+        self.window.destroy()
+
 class StockTicker:
     def __init__(self):
         self.config = self.load_config()
@@ -26,13 +115,73 @@ class StockTicker:
         self.news_items = []
         self.news_canvas = None
         self.news_height = self.config['canvas']['news_height']
+        # Hover menu variables
+        self.menu_frame = None
+        self._menu_hide_after_id = None
+        # Create hover menu and bindings
+        self.create_hover_menu()
         
+        # Initialize config editor
+        self.config_editor = None
+        # Bind click events to show config editor - only to main window
+        self.root.bind("<Button-1>", self.handle_click)
+        self.root.bind("<Double-Button-1>", self.handle_click)
+        self.root.bind("<Configure>", lambda e: print("Configure:", e.width, e.height))
         
+    def handle_click(self, event):
+        """Handle click events to show/hide config editor"""
+        if not self.config_editor:
+            self.config_editor = ConfigEditor(self)
+        self.config_editor.toggle()
+        
+    def get_config_path(self):
+        """Get the path to the config file, preferring user's config directory"""
+        # First, try user's config directory
+        user_config_dir = os.path.expanduser('~/Library/Application Support/Tickrly')
+        user_config_path = os.path.join(user_config_dir, 'config.json')
+        
+        # If user config exists, use it
+        if os.path.exists(user_config_path):
+            return user_config_path
+            
+        # If not, try the bundled config
+        bundled_config = os.path.join(os.path.dirname(__file__), 'config.json')
+        if os.path.exists(bundled_config):
+            # Create user config directory if it doesn't exist
+            os.makedirs(user_config_dir, exist_ok=True)
+            # Copy bundled config to user directory
+            import shutil
+            shutil.copy2(bundled_config, user_config_path)
+            return user_config_path
+            
+        # If neither exists, use user config path (will create default config)
+        return user_config_path
+    
     def load_config(self):
-        config_path = os.path.join(os.path.dirname(__file__), 'config.json')
+        config_path = self.get_config_path()
         try:
-            with open(config_path, 'r') as f:
-                return json.load(f)
+            if os.path.exists(config_path):
+                with open(config_path, 'r') as f:
+                    return json.load(f)
+            else:
+                # Return default config
+                default_config = {
+                    "canvas": {"width": 1200, "stock_height": 40, "news_height": 40},
+                    "stocks": {"symbols": ["^GSPC", "^DJI"]},
+                    "display": {
+                        "stock_font_size": 16,
+                        "news_font_size": 16,
+                        "stock_spacing": 20,
+                        "news_spacing": 40,
+                        "scroll_speed": 2
+                    },
+                    "updates": {"interval": 60000}
+                }
+                # Save default config
+                os.makedirs(os.path.dirname(config_path), exist_ok=True)
+                with open(config_path, 'w') as f:
+                    json.dump(default_config, f, indent=4)
+                return default_config
         except Exception as e:
             print(f"Error loading config: {e}")
             return self.get_default_config()
@@ -187,6 +336,133 @@ class StockTicker:
         )
         self.news_canvas.pack(fill='x', expand=False)
 
+    def create_hover_menu(self):
+        """Create a small menu that appears when the mouse hovers over the app window."""
+        # Create the menu frame but do NOT map it yet; we'll show on hover
+        self.menu_frame = tk.Frame(self.root, bg='#222222')
+
+        # Buttons: Refresh, Toggle News, Settings (example actions)
+        btn_style = {
+            'bg': '#007AFF',        # macOS-style blue
+            'fg': 'white',
+            'activebackground': '#0051A8',
+            'activeforeground': 'white',
+            'relief': 'raised',
+            'bd': 1,
+            'highlightthickness': 0,
+            'padx': 10,
+            'pady': 6,
+            'font': ('Helvetica', 11, 'bold')
+        }
+
+        refresh_btn = tk.Button(self.menu_frame, text='Refresh', command=self._refresh_action, **btn_style)
+        toggle_news_btn = tk.Button(self.menu_frame, text='Toggle News', command=self._toggle_news_action, **btn_style)
+        settings_btn = tk.Button(self.menu_frame, text='Settings', command=self._settings_action, **btn_style)
+
+        # Pack the buttons into the menu frame
+        refresh_btn.pack(side='left', padx=(8, 4), pady=6)
+        toggle_news_btn.pack(side='left', padx=4, pady=6)
+        settings_btn.pack(side='left', padx=4, pady=6)
+
+        # Measure the menu height (used by hover detection) but don't show it yet
+        self.menu_frame.update_idletasks()
+        try:
+            self.menu_height = self.menu_frame.winfo_reqheight()
+        except Exception:
+            self.menu_height = 40
+
+        # Bind pointer motion and leave to control hover behavior across all widgets
+        # use bind_all so motion events are captured even when over child widgets
+        self.root.bind_all('<Motion>', self._on_motion)
+        self.root.bind_all('<Leave>', self._on_root_leave)
+
+    def _on_mouse_enter(self, event=None):
+        # Cancel any scheduled hide and show immediately
+        if self._menu_hide_after_id:
+            try:
+                self.root.after_cancel(self._menu_hide_after_id)
+            except Exception:
+                pass
+            self._menu_hide_after_id = None
+        self._show_menu()
+
+    def _on_mouse_leave(self, event=None):
+        # Schedule hiding the menu after a short delay to avoid flicker
+        if self._menu_hide_after_id:
+            try:
+                self.root.after_cancel(self._menu_hide_after_id)
+            except Exception:
+                pass
+        self._menu_hide_after_id = self.root.after(500, self._hide_menu)
+
+    def _on_motion(self, event=None):
+        """Show menu when mouse is near the top of the window; otherwise hide after delay."""
+        try:
+            root_y = self.root.winfo_rooty()
+            rel_y = event.y_root - root_y
+            # If mouse is within the top menu height (or slightly above), show
+            if rel_y is not None and rel_y >= 0 and rel_y <= max(self.menu_height + 6, 40):
+                if self._menu_hide_after_id:
+                    try:
+                        self.root.after_cancel(self._menu_hide_after_id)
+                    except Exception:
+                        pass
+                    self._menu_hide_after_id = None
+                self._show_menu()
+            else:
+                if self._menu_hide_after_id:
+                    try:
+                        self.root.after_cancel(self._menu_hide_after_id)
+                    except Exception:
+                        pass
+                self._menu_hide_after_id = self.root.after(400, self._hide_menu)
+        except Exception:
+            pass
+
+    def _on_root_leave(self, event=None):
+        # Immediately hide when pointer leaves the toplevel area
+        if self._menu_hide_after_id:
+            try:
+                self.root.after_cancel(self._menu_hide_after_id)
+            except Exception:
+                pass
+        self._hide_menu()
+
+    def _show_menu(self):
+        if not self.menu_frame.winfo_ismapped():
+            # Use place so showing/hiding doesn't change layout geometry
+            self.menu_frame.place(x=0, y=0, relwidth=1)
+
+    def _hide_menu(self):
+        if self.menu_frame and self.menu_frame.winfo_ismapped():
+            try:
+                self.menu_frame.place_forget()
+            except Exception:
+                self.menu_frame.pack_forget()
+        self._menu_hide_after_id = None
+
+    def _refresh_action(self):
+        # Manual refresh: update stocks and news immediately
+        try:
+            self.update_all_stocks()
+            self.update_news()
+        except Exception as e:
+            print(f"Error during manual refresh: {e}")
+
+    def _toggle_news_action(self):
+        # Toggle visibility of the news canvas
+        try:
+            if self.news_canvas and self.news_canvas.winfo_ismapped():
+                self.news_canvas.pack_forget()
+            elif self.news_canvas:
+                self.news_canvas.pack(fill='x', expand=False)
+        except Exception as e:
+            print(f"Error toggling news canvas: {e}")
+
+    def _settings_action(self):
+        # Placeholder for settings - open a simple dialog or print
+        print('Settings clicked (implement settings dialog here)')
+
     def update_all_stocks(self):
         """Update all stocks from config symbols"""
         for ticker in self.config['stocks']['symbols']:
@@ -335,4 +611,3 @@ def main():
 if __name__ == "__main__":
     print("hello")
     main()
-    
