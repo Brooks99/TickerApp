@@ -1,0 +1,1 @@
+([('Tickrly', '/Users/Randall/GitRepo/TickerApp/dist/Tickrly', 'EXECUTABLE')],)

@@ -55,7 +55,7 @@ class StockTicker:
                 "interval": 60000  # Update interval in milliseconds (1 minute)
             },
             "stocks": {
-                "symbols": ["AAPL", "MSFT", "GOOGL", "AMZN", "META"]
+                "symbols": ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "JOBY"]
             }
         }
 
@@ -95,23 +95,23 @@ class StockTicker:
     def update_stock(self, ticker):
         try:
             stock = Ticker(ticker)
+            # Get both open and current prices
             info = stock.history(period='1d')
-            
             if info.empty:
                 self._handle_missing_data(ticker)
                 return
-                
-            current_price = info['Close'].iloc[-1]
-            last_price = self._last_prices.get(ticker, current_price)
-            diff_price = current_price - last_price
             
-            display_text = f"{ticker} | ${current_price:.2f} diff: ${diff_price:.2f}"
+            open_price = info['Open'].iloc[0]  # Get the opening price
+            current_price = stock.info.get('regularMarketPrice', info['Close'].iloc[-1])  # Get current price or latest close
+            diff_price = current_price - open_price
+            
+            display_text = f"{ticker} | Open: ${open_price:.2f} Current Diff: ${diff_price:.2f}"
             color = 'white'
             
-            if current_price < last_price:
+            if current_price < open_price:
                 arrow = "▼"
                 color = 'red'
-            elif current_price > last_price:
+            elif current_price > open_price:
                 arrow = "▲"
                 color = 'green'
             else:

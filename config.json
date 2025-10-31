@@ -5,7 +5,7 @@
         "news_height": 40
     },
     "stocks": {
-        "symbols": ["^GSPC","^DJI", "IBM", "TSLA", "NVDA", "DHI", "CALM"]
+        "symbols": ["^GSPC","^DJI", "IBM", "TSLA", "NVDA", "DHI", "CALM", "JOBY"]
     },
     "display": {
         "stock_font_size": 16,
