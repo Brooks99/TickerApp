@@ -8,8 +8,15 @@ import os
 import pandas_market_calendars as mcal
 from datetime import datetime
 import pytz
+import logging
+from tkinter import messagebox
 
 ssl._create_default_https_context = lambda: ssl.create_default_context(cafile=certifi.where())
+
+# Basic logging for the application. In production this can be configured to
+# write to a file or use a more advanced configuration.
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(name)s: %(message)s')
+logger = logging.getLogger(__name__)
 
 class ConfigEditor:
     def __init__(self, ticker_app):
@@ -69,6 +76,12 @@ class ConfigEditor:
         tk.Button(button_frame, text="Save", command=self.save_changes).pack(side=tk.LEFT, expand=True, padx=5)
         tk.Button(button_frame, text="Cancel", command=self.window.destroy).pack(side=tk.LEFT, expand=True, padx=5)
         
+        # About and License buttons
+        info_frame = tk.Frame(frame)
+        info_frame.pack(fill=tk.X)
+        tk.Button(info_frame, text="About", command=self.show_about).pack(side=tk.LEFT, padx=5, pady=(6,0))
+        tk.Button(info_frame, text="License", command=self.show_license).pack(side=tk.LEFT, padx=5, pady=(6,0))
+        
     def add_symbol(self):
         """Add a new stock symbol"""
         symbol = self.symbol_entry.get().strip().upper()
@@ -100,6 +113,49 @@ class ConfigEditor:
         
         self.window.destroy()
 
+    def show_about(self):
+        """Show an About dialog with application information."""
+        about_text = (
+            "Tickrly\n"
+            "Version: 1.0.0\n"
+            "A lightweight stock and news ticker.\n\n"
+            "Visit: https://example.com for more information."
+        )
+        try:
+            messagebox.showinfo("About Tickrly", about_text, parent=self.window)
+        except Exception:
+            # Fallback if parented messagebox fails
+            messagebox.showinfo("About Tickrly", about_text)
+
+    def show_license(self):
+        """Show license text in a scrollable window. If a LICENSE file is present, show it."""
+        license_win = tk.Toplevel(self.window)
+        license_win.title("License")
+        license_win.geometry("600x400")
+
+        text_frame = tk.Frame(license_win)
+        text_frame.pack(fill=tk.BOTH, expand=True)
+
+        license_text = ""
+        try:
+            lic_path = os.path.join(os.path.dirname(__file__), 'LICENSE')
+            if os.path.exists(lic_path):
+                with open(lic_path, 'r') as f:
+                    license_text = f.read()
+            else:
+                license_text = "No LICENSE file found. Please include a LICENSE in the project root."
+        except Exception:
+            license_text = "Unable to load license." 
+
+        txt = tk.Text(text_frame, wrap='word')
+        txt.insert('1.0', license_text)
+        txt.config(state='disabled')
+        txt.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        scr = tk.Scrollbar(text_frame, command=txt.yview)
+        scr.pack(side=tk.RIGHT, fill=tk.Y)
+        txt['yscrollcommand'] = scr.set
+
 class StockTicker:
     def __init__(self):
         self.config = self.load_config()
@@ -126,7 +182,7 @@ class StockTicker:
         # Bind click events to show config editor - only to main window
         self.root.bind("<Button-1>", self.handle_click)
         self.root.bind("<Double-Button-1>", self.handle_click)
-        self.root.bind("<Configure>", lambda e: print("Configure:", e.width, e.height))
+        self.root.bind("<Configure>", lambda e: logger.debug(f"Configure: {e.width}, {e.height}"))
         
     def handle_click(self, event):
         """Handle click events to show/hide config editor"""
@@ -183,7 +239,7 @@ class StockTicker:
                     json.dump(default_config, f, indent=4)
                 return default_config
         except Exception as e:
-            print(f"Error loading config: {e}")
+            logger.exception("Error loading config")
             return self.get_default_config()
     
     def get_default_config(self):
@@ -238,7 +294,7 @@ class StockTicker:
             else:
                 self.root.title("Tickrly")    
         except Exception as e:
-            print(f"Error updating window title: {e}")
+            logger.exception("Error updating window title")
                  
 
     def update_stock(self, ticker):
@@ -274,7 +330,7 @@ class StockTicker:
             self._last_prices[ticker] = current_price
             
         except Exception as e:
-            print(f"Error fetching stock data for {ticker}: {e}")
+            logger.exception("Error fetching stock data for %s", ticker)
             self._handle_missing_data(ticker)
 
     def update_news(self):
@@ -293,7 +349,7 @@ class StockTicker:
             try:
                 feed = feedparser.parse(urllib.request.urlopen(req))
             except urllib.error.URLError as e:
-                print(f"SSL Error: {e}")
+                logger.warning("SSL/URL error while fetching news feed: %s", e)
                 # Try alternative feed URL
                 feed_url = "https://finance.yahoo.com/news/rssindex"
                 req = urllib.request.Request(feed_url, headers=headers)
@@ -314,7 +370,7 @@ class StockTicker:
                 raise Exception("No news entries found")
                 
         except Exception as e:
-            print(f"Error fetching news: {e}")
+            logger.exception("Error fetching news")
             self.news_items = [{'text': '📰 Unable to fetch news', 'color': 'red'}]
 
     def create_canvas(self):
@@ -447,7 +503,7 @@ class StockTicker:
             self.update_all_stocks()
             self.update_news()
         except Exception as e:
-            print(f"Error during manual refresh: {e}")
+            logger.exception("Error during manual refresh")
 
     def _toggle_news_action(self):
         # Toggle visibility of the news canvas
@@ -457,11 +513,23 @@ class StockTicker:
             elif self.news_canvas:
                 self.news_canvas.pack(fill='x', expand=False)
         except Exception as e:
-            print(f"Error toggling news canvas: {e}")
+            logger.exception("Error toggling news canvas")
 
     def _settings_action(self):
-        # Placeholder for settings - open a simple dialog or print
-        print('Settings clicked (implement settings dialog here)')
+        # Open the config editor (settings) when the Settings button is clicked.
+        try:
+            if not self.config_editor:
+                self.config_editor = ConfigEditor(self)
+            # If window exists bring to front, otherwise create it
+            if not (self.config_editor.window and self.config_editor.window.winfo_exists()):
+                self.config_editor.toggle()
+            else:
+                try:
+                    self.config_editor.window.lift()
+                except Exception:
+                    pass
+        except Exception:
+            logger.exception("Error opening settings/config editor")
 
     def update_all_stocks(self):
         """Update all stocks from config symbols"""
@@ -581,7 +649,7 @@ class StockTicker:
                 return False, "Market Closed"
                 
         except Exception as e:
-            print(f"Error checking market status: {e}")
+            logger.exception("Error checking market status")
             return False, "Market Status Unknown"
 
 def main():
@@ -609,5 +677,4 @@ def main():
     app.root.mainloop()
 
 if __name__ == "__main__":
-    print("hello")
     main()
