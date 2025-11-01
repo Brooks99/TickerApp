@@ -290,7 +290,7 @@ class StockTicker:
             is_open, status = self.is_market_open()
             if not is_open:
                 # If market is closed, set title accordingly
-                self.root.title("Tickrly - {status}")
+                self.root.title(f"Tickrly - {status} Click on stocks to edit")
             else:
                 self.root.title("Tickrly")    
         except Exception as e:
@@ -626,25 +626,38 @@ class StockTicker:
             nyse = mcal.get_calendar('NYSE')
             
             # Get current time in ET (Eastern Time)
+            # We'll compare in UTC because the schedule timestamps are in UTC
+            current_time_utc = datetime.now(pytz.utc)
+
+            # Get today's date string in YYYY-MM-DD for the calendar
             et_tz = pytz.timezone('US/Eastern')
-            current_time = datetime.now(et_tz)
-            
+            today_et = datetime.now(et_tz).date()
+            today_str = today_et.strftime('%Y-%m-%d')
+
             # Get market schedule for today
             schedule = nyse.schedule(
-                start_date=current_time.date(),
-                end_date=current_time.date()
+                start_date=today_str,
+                end_date=today_str
             )
             
             if schedule.empty:
                 return False, "Market Closed (Weekend - Holiday)"
                 
-            market_open = schedule.iloc[0]['market_open'].tz_convert(et_tz)
-            market_close = schedule.iloc[0]['market_close'].tz_convert(et_tz)
-            
-            if market_open <= current_time <= market_close:
+            market_open = schedule.iloc[0]['market_open']
+            market_close = schedule.iloc[0]['market_close']
+
+            # Ensure market_open/close are timezone-aware (they should be)
+            if market_open.tzinfo is None:
+                market_open = market_open.tz_localize(pytz.utc)
+            if market_close.tzinfo is None:
+                market_close = market_close.tz_localize(pytz.utc)
+
+            # Compare using UTC
+            if market_open <= current_time_utc <= market_close:
                 return True, "Market Open"
-            elif current_time < market_open:
-                return False, f"Market Opens at {market_open.strftime('%I:%M %p ET')}"
+            elif current_time_utc < market_open:
+                mo_et = market_open.tz_convert('US/Eastern')
+                return False, f"Market Opens at {mo_et.strftime('%I:%M %p ET')}"
             else:
                 return False, "Market Closed"
                 
