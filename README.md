@@ -1,138 +1,59 @@
 <!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
 <a id="readme-top"></a>
-<!--
-*** Thanks for checking out the Best-README-Template. If you have a suggestion
-*** that would make this better, please fork the repo and create a pull request
-*** or simply open an issue with the tag "enhancement".
-*** Don't forget to give the project a star!
-*** Thanks again! Now go create something AMAZING! :D
--->
-
-
-
-<!-- PROJECT SHIELDS -->
-<!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![project_license][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
-
 
 
 <!-- PROJECT LOGO -->
-<br />
-<div align="center">
-  <a href="https://github.com/Brooks99/TickerApp">
-    <img src="/images/ticker.png" alt="Logo" width="600" height="80">
-  </a>
+<!-- Short, focused README for Tickrly -->
 
-<h3 align="center">Tickrly</h3>
+# Tickrly
 
-  <p align="center">
-    A news and stock ticker providing information and news presented in a scrolling ticker in its own window. A configuration file can be edited to customize and include stocks of interest. 
-    <br />
-    <a href="https://github.com/Brooks99/TickerApp"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/Brooks99/TickerApp">View Demo</a>
-    &middot;
-    <a href="https://github.com/Brooks99/TickerApp/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
-    &middot;
-    <a href="https://github.com/Brooks99/TickerApp/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
-  </p>
-</div>
+A compact macOS stock-and-news ticker built with Tkinter.
 
+## Summary
 
+- Scrolling stock and news tickers
+- Simple in-app Config Editor to add/remove symbols
+- Per-user config at `~/Library/Application Support/Tickrly/config.json`
 
-<!-- TABLE OF CONTENTS -->
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
-  </ol>
-</details>
+## Quick start (development)
 
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+.venv/bin/python ticker.py
+```
 
+## Packaging (macOS)
 
-<!-- ABOUT THE PROJECT -->
-## About The Project
+- Build `.app` with PyInstaller (see `Tickrly.spec`) and create DMG with `dmgbuild`.
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+Example:
 
-Here's a blank template to get started. To avoid retyping too much info, do a search and replace with your text editor for the following: `Brooks99`, `TickerApp`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `Tickrly`, `project_description`, `project_license`
+```bash
+.venv/bin/python -m PyInstaller --clean --noconfirm Tickrly.spec
+.venv/bin/python -m dmgbuild -s dmgbuild_settings.py "Tickrly" "dist/Tickrly.dmg"
+```
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+- Code-sign and notarize the DMG for public distribution.
 
+## Config & license
 
+- On first run the app copies bundled `config.json` (if present) to `~/Library/Application Support/Tickrly/config.json` and uses that file thereafter.
+- Add a `LICENSE` file to the repo root to enable the in-app license viewer.
 
-### Built With
+## Troubleshooting
 
-* [![Next][Next.js]][Next-url]
-* [![React][React.js]][React-url]
-* [![Vue][Vue.js]][Vue-url]
-* [![Angular][Angular.io]][Angular-url]
-* [![Svelte][Svelte.dev]][Svelte-url]
-* [![Laravel][Laravel.com]][Laravel-url]
-* [![Bootstrap][Bootstrap.com]][Bootstrap-url]
-* [![JQuery][JQuery.com]][JQuery-url]
+- Run the packaged binary from `dist/Tickrly.app/Contents/MacOS/` to see console output.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+## Contributing
 
+- Add tests for non-UI logic (e.g. `is_market_open`) and CI to run lint/tests and produce builds.
 
+---
 
-<!-- GETTING STARTED -->
-## Getting Started
+If you'd like, I can add a `CONTRIBUTING.md`, an MIT `LICENSE`, and a basic GitHub Actions workflow to build macOS artifacts.
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
-
-### Prerequisites
-
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
-
-### Installation
-
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
-   ```sh
-   git clone https://github.com/Brooks99/TickerApp.git
-   ```
-3. Install NPM packages
-   ```sh
-   npm install
-   ```
-4. Enter your API in `config.js`
-   ```js
    const API_KEY = 'ENTER YOUR API';
    ```
 5. Change git remote url to avoid accidental pushes to base project
@@ -205,23 +126,7 @@ Distributed under the project_license. See `LICENSE.txt` for more information.
 
 <!-- CONTACT -->
 ## Contact
-
-Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_client.com
-
 Project Link: [https://github.com/Brooks99/TickerApp](https://github.com/Brooks99/TickerApp)
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- ACKNOWLEDGMENTS -->
-## Acknowledgments
-
-* []()
-* []()
-* []()
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
