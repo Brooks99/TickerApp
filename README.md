@@ -227,33 +227,91 @@ Project Link: [https://github.com/Brooks99/TickerApp](https://github.com/Brooks9
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/Brooks99/TickerApp.svg?
-style=for-the-badge
-[contributors-url]: https://github.com/Brooks99/TickerApp/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/Brooks99/TickerApp.svg?style=for-the-badge
-[forks-url]: https://github.com/Brooks99/TickerApp/network/members
-[stars-shield]: https://img.shields.io/github/stars/Brooks99/TickerApp.svg?style=for-the-badge
-[stars-url]: https://github.com/Brooks99/TickerApp/stargazers
-[issues-shield]: https://img.shields.io/github/issues/Brooks99/TickerApp.svg?style=for-the-badge
-[issues-url]: https://github.com/Brooks99/TickerApp/issues
-[license-shield]: https://img.shields.io/github/license/Brooks99/TickerApp.svg?style=for-the-badge
-[license-url]: https://github.com/Brooks99/TickerApp/blob/master/LICENSE.txt
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/linkedin_username
-[product-screenshot]: images/screenshot.png
-[Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
-[Next-url]: https://nextjs.org/
-[React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
-[React-url]: https://reactjs.org/
-[Vue.js]: https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D
-[Vue-url]: https://vuejs.org/
-[Angular.io]: https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white
-[Angular-url]: https://angular.io/
-[Svelte.dev]: https://img.shields.io/badge/Svelte-4A4A55?style=for-the-badge&logo=svelte&logoColor=FF3E00
-[Svelte-url]: https://svelte.dev/
-[Laravel.com]: https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white
-[Laravel-url]: https://laravel.com
-[Bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
-[Bootstrap-url]: https://getbootstrap.com
-[JQuery.com]: https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white
-[JQuery-url]: https://jquery.com 
+### Tickrly
+
+Tickrly is a lightweight desktop stock-and-news ticker for macOS. It displays a scrolling feed of stock symbols and short news headlines in a compact window. The app is implemented with Tkinter and uses `yfinance` for stock data and `feedparser` for news.
+
+## Key features
+
+- Scrolling stock ticker and news ticker
+- Simple in-app Config Editor (add / remove symbols)
+- Per-user config stored at `~/Library/Application Support/Tickrly/config.json`
+- About and License viewers in the Config Editor
+- Packaging support using PyInstaller + dmgbuild
+
+## Quick start (development)
+
+Requirements
+
+- macOS
+- Python 3.10+ (development used 3.12)
+
+Setup
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+```
+
+Run locally
+
+```bash
+.venv/bin/python ticker.py
+```
+
+Open the app and click the main window to open the Config Editor. Add or remove symbols and click Save to persist changes.
+
+## Config file behavior
+
+- On first run, the app copies the bundled `config.json` (if present) into `~/Library/Application Support/Tickrly/config.json` and uses that user-local file thereafter.
+- All reads/writes happen against the user config to ensure the file is writable and persists across updates.
+
+## Packaging for macOS
+
+We use PyInstaller to build the `.app` bundle and `dmgbuild` to create a DMG installer. Example commands (run from project root with the virtualenv active):
+
+```bash
+.venv/bin/python -m PyInstaller --clean --noconfirm Tickrly.spec
+.venv/bin/python -m dmgbuild -s dmgbuild_settings.py "Tickrly" "dist/Tickrly.dmg"
+```
+
+Notes:
+
+- To include a custom icon, place an `.icns` file in the project and reference it in the `BUNDLE(..., icon='path/to/icon.icns')` call inside `Tickrly.spec`.
+- For public distribution, you must code sign the `.app` and notarize the DMG using an Apple Developer account.
+
+## About & License
+
+- The Config Editor contains an About dialog (Version, link) and a License viewer that will display a `LICENSE` file from the repo root if present.
+- Add a `LICENSE` file (MIT/Apache/etc.) to enable the in-app license viewer.
+
+## Logging and diagnostics
+
+- The app uses Python's `logging` module. By default logs are INFO-level to stdout. For production, configure a rotating file handler and/or make the log level configurable via environment variable.
+
+## Tests and CI suggestions
+
+- Add unit tests (pytest) for non-UI logic, e.g. config handling and `is_market_open`.
+- Use GitHub Actions (macOS runner) to run linting, tests, and produce build artifacts.
+
+## Troubleshooting
+
+- If a packaged app fails to start, run the binary under `dist/Tickrly.app/Contents/MacOS/` in a Terminal to see stderr output.
+- If news or feeds fail, check network connectivity and feed URLs. The app attempts a fallback feed when the primary feed fails.
+
+## Production checklist (short)
+
+1. Pin dependencies in `requirements.txt` and test on a clean macOS runner.
+2. Add automated linting and testing in CI (GitHub Actions).
+3. Code sign the `.app` and notarize the DMG.
+4. Provide a proper `.icns` app icon and set it in the PyInstaller spec.
+5. Consider a `onedir` PyInstaller mode for macOS bundles.
+
+## Contributing
+
+Contributions welcome. Open issues or PRs and include tests for logic changes.
+
+---
+
+If you'd like, I can also add a `CONTRIBUTING.md`, a sample `LICENSE` (MIT) and a GitHub Actions workflow to build macOS artifacts.
