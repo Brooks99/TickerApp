@@ -48,6 +48,10 @@
 		<data>
 		16QTkjWoQQOmCHgIvSazwdbCN2s=
 		</data>
+		<key>Resources/Tickrly.icns</key>
+		<data>
+		bHM39qRJfsyeGn93nnPZziWLe9Y=
+		</data>
 		<key>Resources/_tcl_data/auto.tcl</key>
 		<data>
 		q3LD5+JJwylBqn63fZx2SxIFWog=
@@ -1300,9 +1304,13 @@
 		<data>
 		GBqdjL2eeFxpGUmsJTamHaS0USo=
 		</data>
+		<key>Resources/assets/Tickrly.icns</key>
+		<data>
+		bHM39qRJfsyeGn93nnPZziWLe9Y=
+		</data>
 		<key>Resources/base_library.zip</key>
 		<data>
-		TLjNMzN27jl7VuU9IpsjhXyDPRk=
+		c4voMO5Bdy3BMgPJ1UCKyTbmd7o=
 		</data>
 		<key>Resources/certifi/cacert.pem</key>
 		<data>
@@ -1371,10 +1379,6 @@
 		<key>Resources/exchange_calendars-4.10.dist-info/top_level.txt</key>
 		<data>
 		i/oxPzZjA7e1lbjIIOjU7yuHS40=
-		</data>
-		<key>Resources/icon-windowed.icns</key>
-		<data>
-		eEHOuYpZLB0vKGVIWGZOh5rH8+o=
 		</data>
 		<key>Resources/jedi/third_party/django-stubs/LICENSE.txt</key>
 		<data>
@@ -11229,6 +11233,11 @@
 			<key>symlink</key>
 			<string>../Resources/_tk_data</string>
 		</dict>
+		<key>Frameworks/assets</key>
+		<dict>
+			<key>symlink</key>
+			<string>../Resources/assets</string>
+		</dict>
 		<key>Frameworks/base_library.zip</key>
 		<dict>
 			<key>symlink</key>
@@ -12660,6 +12669,13 @@
 		<dict>
 			<key>symlink</key>
 			<string>../Frameworks/Python.framework</string>
+		</dict>
+		<key>Resources/Tickrly.icns</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			YvoUW//AJHolKeXVIYqlSHa4YrVvPWe48hdrYThEVrU=
+			</data>
 		</dict>
 		<key>Resources/_cffi_backend.cpython-312-darwin.so</key>
 		<dict>
@@ -14857,11 +14873,18 @@
 			IdJZTIMZ8UxHoPC/PSrKvMgsmrjYSmT6PLYIx+dfWcM=
 			</data>
 		</dict>
+		<key>Resources/assets/Tickrly.icns</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			YvoUW//AJHolKeXVIYqlSHa4YrVvPWe48hdrYThEVrU=
+			</data>
+		</dict>
 		<key>Resources/base_library.zip</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			CGFy/6iOgQDGis8hAcCJll/NZjtVHpO4FmvJZ4g0Y48=
+			LHoA1knmZkHO+O5xWWHfKkHg+6AWcRpUsMz4COdQ+ks=
 			</data>
 		</dict>
 		<key>Resources/certifi/cacert.pem</key>
@@ -14997,13 +15020,6 @@
 		<dict>
 			<key>symlink</key>
 			<string>../Frameworks/google</string>
-		</dict>
-		<key>Resources/icon-windowed.icns</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			uQo7VuWRab4Phv4EEGmfQsyqFqDIXZgO8OtgaAMvCzY=
-			</data>
 		</dict>
 		<key>Resources/jedi/third_party/django-stubs/LICENSE.txt</key>
 		<dict>

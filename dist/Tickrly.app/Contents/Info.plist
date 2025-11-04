@@ -7,7 +7,7 @@
 	<key>CFBundleExecutable</key>
 	<string>Tickrly</string>
 	<key>CFBundleIconFile</key>
-	<string>icon-windowed.icns</string>
+	<string>Tickrly.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.tickrly.app</string>
 	<key>CFBundleInfoDictionaryVersion</key>
