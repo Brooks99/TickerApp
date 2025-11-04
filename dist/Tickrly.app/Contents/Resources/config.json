@@ -1,0 +1,30 @@
+{
+    "canvas": {
+        "width": 1200,
+        "stock_height": 40,
+        "news_height": 40
+    },
+    "stocks": {
+        "symbols": [
+            "^GSPC",
+            "^DJI",
+            "IBM",
+            "TSLA",
+            "DHI",
+            "CALM",
+            "JOBY",
+            "T",
+            "VIK"
+        ]
+    },
+    "display": {
+        "stock_font_size": 16,
+        "news_font_size": 16,
+        "stock_spacing": 20,
+        "news_spacing": 40,
+        "scroll_speed": 2
+    },
+    "updates": {
+        "interval": 60000
+    }
+}

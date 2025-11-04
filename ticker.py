@@ -117,9 +117,9 @@ class ConfigEditor:
         """Show an About dialog with application information."""
         about_text = (
             "Tickrly\n"
-            "Version: 1.0.0\n"
+            "Version: 1.0.2\n"
             "A lightweight stock and news ticker.\n\n"
-            "Visit: https://example.com for more information."
+            "Visit:  https://github.com/Brooks99/TickerApp for more information."
         )
         try:
             messagebox.showinfo("About Tickrly", about_text, parent=self.window)

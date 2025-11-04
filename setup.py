@@ -9,8 +9,8 @@ OPTIONS = {
         'CFBundleName': 'Tickrly',
         'CFBundleDisplayName': 'Tickrly',
         'CFBundleIdentifier': 'com.tickrly.app',
-        'CFBundleVersion': '1.0.0',
-        'CFBundleShortVersionString': '1.0.0',
+    'CFBundleVersion': '1.0.2',
+    'CFBundleShortVersionString': '1.0.2',
     }
 }
 

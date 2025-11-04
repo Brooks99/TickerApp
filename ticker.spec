@@ -64,7 +64,7 @@ app = BUNDLE(
         'CFBundleDisplayName': 'Tickrly',
         'CFBundleExecutable': 'Tickrly',
         'CFBundlePackageType': 'APPL',
-        'CFBundleShortVersionString': '1.0.0',
+    'CFBundleShortVersionString': '1.0.2',
         'NSHighResolutionCapable': True,
     },
 )
