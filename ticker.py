@@ -266,10 +266,16 @@ class StockTicker:
 
     def initialize_stocks(self):
         """Initialize stocks from config"""
+        # Determine market status once at init
+        try:
+            is_open, status = self.is_market_open()
+        except Exception:
+            is_open = True
+
         for symbol in self.config['stocks']['symbols']:
             self._stocks[symbol] = {
                 'display_text': f"{symbol} | Loading...",
-                'color': 'white',
+                'color': 'white' if is_open else 'gray',
                 'arrow': ''
             }
             self._last_prices[symbol] = 0
@@ -321,6 +327,14 @@ class StockTicker:
                 color = 'green'
             else:
                 arrow = ""
+
+            # If market is closed (or holiday), show neutral gray color
+            try:
+                if not getattr(self, 'market_is_open', True):
+                    color = 'gray'
+                    arrow = ''
+            except Exception:
+                pass
                 
             self._stocks[ticker] = {
                 'display_text': display_text,
@@ -533,6 +547,16 @@ class StockTicker:
 
     def update_all_stocks(self):
         """Update all stocks from config symbols"""
+        # Check market status once per bulk update and store it
+        try:
+            is_open, status = self.is_market_open()
+            self.market_is_open = is_open
+            self.market_status = status
+        except Exception:
+            # If status check fails, assume open to avoid hiding information
+            self.market_is_open = True
+            self.market_status = 'Unknown'
+
         for ticker in self.config['stocks']['symbols']:
             self.update_stock(ticker)
 
