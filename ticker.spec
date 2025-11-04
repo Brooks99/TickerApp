@@ -6,7 +6,7 @@ a = Analysis(
     ['ticker.py'],
     pathex=[],
     binaries=[],
-    datas=[('config.json', '.')],  # Include config.json in the bundle
+    datas=[('config.json', '.'), ('assets/Tickrly.icns', 'assets')],  # Include config.json and icon in the bundle
     hiddenimports=['yfinance', 'feedparser', 'pandas_market_calendars'],
     hookspath=[],
     hooksconfig={},
@@ -36,7 +36,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=None,
+    icon='assets/Tickrly.icns',
 )
 
 coll = COLLECT(
@@ -53,7 +53,7 @@ coll = COLLECT(
 app = BUNDLE(
     coll,
     name='Tickrly.app',
-    icon=None,
+    icon='assets/Tickrly.icns',
     bundle_identifier='com.tickrly.app',
     info_plist={
         'LSEnvironment': {
