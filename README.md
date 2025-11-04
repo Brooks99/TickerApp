@@ -18,12 +18,6 @@ A compact macOS stock-and-news ticker built with Tkinter. Tickrly is a lightweig
 - Packaging support using PyInstaller + dmgbuild
 
 
-## Summary
-
-- Scrolling stock and news tickers
-- Simple in-app Config Editor to add/remove symbols
-- Per-user config at `~/Library/Application Support/Tickrly/config.json`
-
 ## Quick start (development)
 
 ```bash
@@ -49,7 +43,7 @@ Example:
 ## Config & license
 
 - On first run the app copies bundled `config.json` (if present) to `~/Library/Application Support/Tickrly/config.json` and uses that file thereafter.
-- Add a `LICENSE` file to the repo root to enable the in-app license viewer.
+- MIT License
 
 ## Troubleshooting
 
