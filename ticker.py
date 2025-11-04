@@ -1,3 +1,35 @@
+import os
+import sys
+import locale
+import logging
+
+# Configure logging first
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Ensure macOS localization falls back to en_US.UTF-8 so Tk won't produce nil menu titles
+try:
+    # Try to set the locale through the locale module first
+    locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
+    logger.info("Locale set through locale module")
+except Exception as e:
+    logger.warning(f"Could not set locale through locale module: {e}")
+
+# Ensure environment variables are set as a fallback
+os.environ["LANG"] = "en_US.UTF-8"
+os.environ["LC_ALL"] = "en_US.UTF-8"
+logger.info(f"Environment variables set: LANG={os.environ.get('LANG')}, LC_ALL={os.environ.get('LC_ALL')}")
+
+# Force PyObjC bridge to initialize with UTF-8
+if sys.platform == 'darwin':
+    try:
+        from Foundation import NSLocale
+        preferredLang = NSLocale.preferredLanguages()[0]
+        logger.info(f"macOS preferred language: {preferredLang}")
+    except Exception as e:
+        logger.warning(f"Could not initialize PyObjC bridge: {e}")
+
+# then the rest of imports
 import tkinter as tk
 from yfinance import Ticker
 import feedparser  # Add this import for RSS feeds

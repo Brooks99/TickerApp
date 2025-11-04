@@ -48,6 +48,10 @@
 		<data>
 		16QTkjWoQQOmCHgIvSazwdbCN2s=
 		</data>
+		<key>Resources/LICENSE</key>
+		<data>
+		Qic00Rhtg0li1fVJ//209ahnnK8=
+		</data>
 		<key>Resources/Tickrly.icns</key>
 		<data>
 		bHM39qRJfsyeGn93nnPZziWLe9Y=
@@ -1310,7 +1314,7 @@
 		</data>
 		<key>Resources/base_library.zip</key>
 		<data>
-		c4voMO5Bdy3BMgPJ1UCKyTbmd7o=
+		1y32SCGAJYFLMilIjwUSpdZ8c20=
 		</data>
 		<key>Resources/certifi/cacert.pem</key>
 		<data>
@@ -11200,6 +11204,11 @@
 			<key>symlink</key>
 			<string>../Resources/IPython</string>
 		</dict>
+		<key>Frameworks/LICENSE</key>
+		<dict>
+			<key>symlink</key>
+			<string>../Resources/LICENSE</string>
+		</dict>
 		<key>Frameworks/Python</key>
 		<dict>
 			<key>symlink</key>
@@ -12658,6 +12667,13 @@
 			<key>hash2</key>
 			<data>
 			5gLcj8iCk+WCOGz0ObpQpuZMhGwS1jUMyH3mouGxQJI=
+			</data>
+		</dict>
+		<key>Resources/LICENSE</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			TB/IFyjHlT2tsDjlA8wsuyIhQRetbzRBAWa2umosk7E=
 			</data>
 		</dict>
 		<key>Resources/Python</key>
@@ -14884,7 +14900,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			LHoA1knmZkHO+O5xWWHfKkHg+6AWcRpUsMz4COdQ+ks=
+			NyfwXRIgApo0/EuyPdvrv74o3Wqf0OsUJVzUvIfpcIw=
 			</data>
 		</dict>
 		<key>Resources/certifi/cacert.pem</key>

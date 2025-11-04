@@ -29,7 +29,11 @@ settings = {
     'icon_locations': {
         'Tickrly.app': (140, 120),
         'Applications': (460, 120),
+        'LICENSE': (300, 220),  # Position the license file below the apps
     },
+
+    # Files to include in the DMG
+    'files': ['dist/Tickrly.app', 'LICENSE'],
 
     # Shortcut to Applications folder
     'symlinks': {'Applications': '/Applications'},

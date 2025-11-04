@@ -6,9 +6,18 @@ a = Analysis(
     ['ticker.py'],
     pathex=[],
     binaries=[],
-    datas=[('config.json', '.'), ('assets/Tickrly.icns', 'assets')],  # Include config.json and icon in the bundle
-    hiddenimports=['yfinance', 'feedparser', 'pandas_market_calendars'],
-    hookspath=[],
+    datas=[('config.json', '.'), ('assets/Tickrly.icns', 'assets'), ('LICENSE', '.')],  # Include config.json, icon, and license in the bundle
+    hiddenimports=[
+        'yfinance',
+        'feedparser',
+        'pandas_market_calendars',
+        'tkinter',
+        'tkinter.ttk',
+        '_tkinter',
+        'logging',
+        'locale',
+    ],
+    hookspath=['hooks'],
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],
